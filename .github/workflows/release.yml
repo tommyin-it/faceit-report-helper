@@ -1,0 +1,55 @@
+name: Publish GitHub Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to publish again
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
+      RELEASE_ASSET: faceit-report-helper.zip
+
+    steps:
+      - name: Checkout distribution
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ env.RELEASE_TAG }}
+
+      - name: Verify release payload
+        shell: bash
+        run: |
+          metadata_version="$(jq -r '.version' latest.json)"
+          manifest_version="$(unzip -p "$RELEASE_ASSET" manifest.json | jq -r '.version')"
+          expected_sha256="$(jq -r '.sha256' latest.json)"
+          actual_sha256="$(sha256sum "$RELEASE_ASSET" | cut -d ' ' -f 1)"
+          test "$RELEASE_TAG" = "v$metadata_version"
+          test "$manifest_version" = "$metadata_version"
+          test "$actual_sha256" = "$expected_sha256"
+
+      - name: Create GitHub Release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release upload "$RELEASE_TAG" "$RELEASE_ASSET" --clobber
+          else
+            gh release create "$RELEASE_TAG" "$RELEASE_ASSET" \
+              --verify-tag \
+              --title "$RELEASE_TAG" \
+              --notes "Gotowa wersja FACEIT Report Helper. Pobierz plik $RELEASE_ASSET, rozpakuj go i wskaż rozpakowany katalog w chrome://extensions." \
+              --latest
+          fi
