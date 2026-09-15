@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
-  "version": "0.6.0",
+  "version": "0.7.0",
   "downloadUrl": "https://github.com/tommyin-it/faceit-report-helper/releases/latest/download/faceit-report-helper.zip",
-  "releaseNotesUrl": "https://github.com/tommyin-it/faceit-report-helper/releases/tag/v0.6.0",
-  "publishedAt": "2026-09-15T19:30:27.822Z",
-  "sha256": "2cb1e07574e82a4d5ea55f4b569acdb10c049133ce8c183ea4d2855e969a22b5"
+  "releaseNotesUrl": "https://github.com/tommyin-it/faceit-report-helper/releases/tag/v0.7.0",
+  "publishedAt": "2026-09-15T20:15:40.409Z",
+  "sha256": "e652462f2c707c5a4f864ac731a233496f121e2e1cb6ebde0218bbbf973ff92a"
 }
